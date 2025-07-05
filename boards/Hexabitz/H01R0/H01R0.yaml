@@ -1,0 +1,21 @@
+# Copyright (c) 2025 Hexabitz
+# SPDX-License-Identifier: Apache-2.0
+
+identifier: H01R0
+name: H01R0
+vendor: Hexabitz
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+  - xtools
+ram: 144
+flash: 512
+supported:
+  - adc
+  - uart
+  - gpio
+  - nvs
+  - dma
+  - lptim
