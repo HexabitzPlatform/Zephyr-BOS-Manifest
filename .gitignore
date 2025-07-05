@@ -1,5 +1,16 @@
-.venv/
-.west/
-external
-**/build*/
-.vscode/compile_commands.json
+# editors
+.vscode
+*.swp
+*~
+
+# python
+.venv
+
+# build
+/build*
+/twister-out*
+
+__pycache__/
+
+# docs
+/doc/_build*
