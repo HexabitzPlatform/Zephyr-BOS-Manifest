@@ -1,80 +1,62 @@
-/*
- * Copyright (c) 2021 Nordic Semiconductor ASA
- * SPDX-License-Identifier: Apache-2.0
- */
-
 #include <zephyr/kernel.h>
-#include <zephyr/drivers/sensor.h>
-#include <zephyr/logging/log.h>
+#include <zephyr/sys/printk.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/pwm.h>
 
-#include <app/drivers/blink.h>
+// static const struct pwm_dt_spec red_pwm_led = PWM_DT_SPEC_GET(DT_ALIAS(red_pwm_led));
+// static const struct pwm_dt_spec green_pwm_led = PWM_DT_SPEC_GET(DT_ALIAS(green_pwm_led));
+// static const struct pwm_dt_spec blue_pwm_led = PWM_DT_SPEC_GET(DT_ALIAS(blue_pwm_led));
 
-#include <app_version.h>
-
-LOG_MODULE_REGISTER(main, CONFIG_APP_LOG_LEVEL);
-
-#define BLINK_PERIOD_MS_STEP 100U
-#define BLINK_PERIOD_MS_MAX  1000U
+#define STEP_SIZE PWM_USEC(2000)
 
 int main(void)
 {
-	int ret;
-	unsigned int period_ms = BLINK_PERIOD_MS_MAX;
-	const struct device *sensor, *blink;
-	struct sensor_value last_val = { 0 }, val;
+	// uint32_t pulse_red, pulse_green, pulse_blue; /* pulse widths */
+	// int ret;
 
-	printk("Zephyr Example Application %s\n", APP_VERSION_STRING);
+	// printk("PWM-based RGB LED control\n");
 
-	sensor = DEVICE_DT_GET(DT_NODELABEL(example_sensor));
-	if (!device_is_ready(sensor)) {
-		LOG_ERR("Sensor not ready");
-		return 0;
+	// if (!pwm_is_ready_dt(&red_pwm_led) ||
+	// 	!pwm_is_ready_dt(&green_pwm_led) ||
+	// 	!pwm_is_ready_dt(&blue_pwm_led))
+	// {
+	// 	printk("Error: one or more PWM devices not ready\n");
+	// 	return 0;
+	// }
+
+	while (1)
+	{
+		// for (pulse_red = 0U; pulse_red <= red_pwm_led.period; pulse_red += STEP_SIZE)
+		// {
+		// 	ret = pwm_set_pulse_dt(&red_pwm_led, pulse_red);
+		// 	if (ret != 0)
+		// 	{
+		// 		printk("Error %d: red write failed\n", ret);
+		// 		return 0;
+		// 	}
+
+		// 	for (pulse_green = 0U; pulse_green <= green_pwm_led.period; pulse_green += STEP_SIZE)
+		// 	{
+		// 		ret = pwm_set_pulse_dt(&green_pwm_led, pulse_green);
+		// 		if (ret != 0)
+		// 		{
+		// 			printk("Error %d: green write failed\n", ret);
+		// 			return 0;
+		// 		}
+
+		// 	for (pulse_blue = 0U; pulse_blue <= blue_pwm_led.period;pulse_blue += STEP_SIZE)
+		// 	{
+		// 			ret = pwm_set_pulse_dt(&blue_pwm_led, pulse_blue);
+		// 			if (ret != 0)
+		// 			{
+		// 				printk("Error %d: " "blue write failed\n", ret);
+		// 				return 0;
+		// 			}
+		// 			k_sleep(K_SECONDS(1));
+		// 		}
+		// 	}
+
+		// }
 	}
-
-	blink = DEVICE_DT_GET(DT_NODELABEL(blink_led));
-	if (!device_is_ready(blink)) {
-		LOG_ERR("Blink LED not ready");
-		return 0;
-	}
-
-	ret = blink_off(blink);
-	if (ret < 0) {
-		LOG_ERR("Could not turn off LED (%d)", ret);
-		return 0;
-	}
-
-	printk("Use the sensor to change LED blinking period\n");
-
-	while (1) {
-		ret = sensor_sample_fetch(sensor);
-		if (ret < 0) {
-			LOG_ERR("Could not fetch sample (%d)", ret);
-			return 0;
-		}
-
-		ret = sensor_channel_get(sensor, SENSOR_CHAN_PROX, &val);
-		if (ret < 0) {
-			LOG_ERR("Could not get sample (%d)", ret);
-			return 0;
-		}
-
-		if ((last_val.val1 == 0) && (val.val1 == 1)) {
-			if (period_ms == 0U) {
-				period_ms = BLINK_PERIOD_MS_MAX;
-			} else {
-				period_ms -= BLINK_PERIOD_MS_STEP;
-			}
-
-			printk("Proximity detected, setting LED period to %u ms\n",
-			       period_ms);
-			blink_set_period_ms(blink, period_ms);
-		}
-
-		last_val = val;
-
-		k_sleep(K_MSEC(100));
-	}
-
 	return 0;
 }
-
