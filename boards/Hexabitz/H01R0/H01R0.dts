@@ -1,11 +1,11 @@
 
  /dts-v1/;
  #include <st/g0/stm32g0b1Xe.dtsi>
- #include <st/g0/stm32g0b1r(b-c-e)tx-pinctrl.dtsi>
+ #include <st/g0/stm32g0b1r(b-c-e)uxn-pinctrl.dtsi>
  #include <zephyr/dt-bindings/input/input-event-codes.h>
  
  / {
-	 model = "Hexabitz - RGB Module - H01R0x (STM32G0B1CEU6N) ";
+	 model = "Hexabitz H01R0x (STM32G0B1CEU6N) ";
 	 compatible = "st,stm32g0b1re-nucleo";
  
 	 /* The (chosen) node in a Zephyr Device Tree Source (DTS) file is used to specify important 
