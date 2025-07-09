@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Nordic Semiconductor ASA
+# Copyright (c) 2025 Hexabitz
 # SPDX-License-Identifier: Apache-2.0
 
 manifest:
@@ -18,5 +18,4 @@ manifest:
         # strictly needed by the application.
         name-allowlist:
           - cmsis_6    # required by the ARM port for Cortex-M
-          - hal_nordic # required by the custom_plank board (Nordic based)
-          - hal_stm32  # required by the nucleo_f302r8 board (STM32 based)
+          - hal_stm32  # required by the Hexabitz Modules board (STM32 based)
