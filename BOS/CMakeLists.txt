@@ -16,16 +16,17 @@ zephyr_library_include_directories(include)
 # - Prepares for potential future system calls by including the 'include' directory
 zephyr_syscall_include_directories(include)
 
-if(CONFIG_BOARD_H01R0)
-  add_subdirectory(
-    ${ZEPHYR_CURRENT_MODULE_DIR}/Hexabitz_Modules/H01R0
-    ${CMAKE_CURRENT_BINARY_DIR}/Hexabitz_Modules/H01R0
-  )
-elseif(CONFIG_BOARD_H0BR4)
-  add_subdirectory(
-    ${ZEPHYR_CURRENT_MODULE_DIR}/Hexabitz_Modules/H0BR4
-    ${CMAKE_CURRENT_BINARY_DIR}/Hexabitz_Modules/H0BR4
-  )
-endif()
+
+# if(CONFIG_BOARD_H01R0)
+#   add_subdirectory(
+#     ${ZEPHYR_CURRENT_MODULE_DIR}/Hexabitz_Modules/H01R0
+#     ${CMAKE_CURRENT_BINARY_DIR}/Hexabitz_Modules/H01R0
+#   )
+# elseif(CONFIG_BOARD_H0BR4)
+#   add_subdirectory(
+#     ${ZEPHYR_CURRENT_MODULE_DIR}/Hexabitz_Modules/H0BR4
+#     ${CMAKE_CURRENT_BINARY_DIR}/Hexabitz_Modules/H0BR4
+#   )
+# endif()
 
 

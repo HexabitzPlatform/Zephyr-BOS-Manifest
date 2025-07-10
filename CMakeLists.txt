@@ -14,3 +14,5 @@
 # add_subdirectory(drivers)
 # add_subdirectory(lib)
 add_subdirectory(BOS)
+add_subdirectory(Hexabitz_Modules)
+add_subdirectory(Hexabitz_Drivers)
