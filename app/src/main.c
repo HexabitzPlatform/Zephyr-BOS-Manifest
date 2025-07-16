@@ -1,84 +1,135 @@
+/*
+ * Copyright (c) 2024 STMicroelectronics
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include <zephyr/kernel.h>
-#include <zephyr/sys/printk.h>
 #include <zephyr/device.h>
-#include <zephyr/drivers/pwm.h>
-#include <zephyr/drivers/gpio.h>
+#include <zephyr/devicetree.h>
+#include <zephyr/drivers/uart.h>
+#include <zephyr/sys/ring_buffer.h>
+#include <zephyr/sys/printk.h>
+#include <string.h>
 
-static const struct pwm_dt_spec red_pwm_led = PWM_DT_SPEC_GET(DT_ALIAS(red_pwm_led));
-static const struct pwm_dt_spec green_pwm_led = PWM_DT_SPEC_GET(DT_ALIAS(green_pwm_led));
-static const struct pwm_dt_spec blue_pwm_led = PWM_DT_SPEC_GET(DT_ALIAS(blue_pwm_led));
+#define RING_BUF_SIZE 1000
+#define RX_BUF_SIZE 10
 
-static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(DT_ALIAS(module_led), gpios);
+#define RECEIVE_TIMEOUT 0
 
-#define SLEEP_TIME_MS 1000
-#define STEP_SIZE PWM_USEC(2000)
+#define STACK_SIZE 1024
 
-int main(void)
+// #define UART_DEVICE_NODE DT_CHOSEN(usart2)
+#define UART_DEVICE_NODE DT_NODELABEL(usart2)
+
+static const struct device *const uart_dev = DEVICE_DT_GET(UART_DEVICE_NODE);
+
+/* uart configuration structure */
+const struct uart_config uart_cfg = {.baudrate = 115200,
+									 .parity = UART_CFG_PARITY_NONE,
+									 .stop_bits = UART_CFG_STOP_BITS_1,
+									 .data_bits = UART_CFG_DATA_BITS_8,
+									 .flow_ctrl = UART_CFG_FLOW_CTRL_NONE};
+
+/* define a ring buffer to get raw bytes*/
+RING_BUF_DECLARE(ring_buf, RING_BUF_SIZE);
+
+/* define uart rx buffer */
+static uint8_t rx_buffer[RX_BUF_SIZE];
+
+/* define thread  stack size */
+static K_THREAD_STACK_DEFINE(uart_rx_stack, STACK_SIZE);
+
+/* struct uart_event async_evt */
+static struct k_thread uart_rx_thread_data = {0};
+
+void print_uart(char *buf, int len)
 {
-	uint32_t pulse_red, pulse_green, pulse_blue; /* pulse widths */
-	int ret;
-
-	bool led_state = true;
-
-	if (!gpio_is_ready_dt(&led))
+	for (int i = 0; i < len; i++)
 	{
-		return 0;
-	}
 
-	ret = gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE);
-	if (ret < 0)
-	{
-		return 0;
+		if ((buf[i] == '\n' || buf[i] == '\r'))
+		{
+			uart_poll_out(uart_dev, '\n');
+		}
+		else
+		{
+			uart_poll_out(uart_dev, buf[i]);
+		}
 	}
+}
 
-	printk("PWM-based RGB LED control\n");
-
-	if (!pwm_is_ready_dt(&red_pwm_led) ||
-		!pwm_is_ready_dt(&green_pwm_led) ||
-		!pwm_is_ready_dt(&blue_pwm_led))
-	{
-		printk("Error: one or more PWM devices not ready\n");
-		return 0;
-	}
+/* Data processing thread */
+static void uart_rx_thread(void *p1, void *p2, void *p3)
+{
+	uint8_t rx_data[RX_BUF_SIZE];
+	size_t len;
 
 	while (1)
 	{
 
-		for (pulse_red = 0U; pulse_red <= red_pwm_led.period; pulse_red += STEP_SIZE)
+		/* Check if there's data in the ring buffer */
+		len = ring_buf_get(&ring_buf, rx_data, sizeof(rx_data));
+
+		if (len > 0)
 		{
-			ret = pwm_set_pulse_dt(&red_pwm_led, pulse_red);
-			if (ret != 0)
-			{
-				printk("Error %d: red write failed\n", ret);
-				return 0;
-			}
 
-			for (pulse_green = 0U; pulse_green <= green_pwm_led.period; pulse_green += STEP_SIZE)
-			{
-				ret = pwm_set_pulse_dt(&green_pwm_led, pulse_green);
-				if (ret != 0)
-				{
-					printk("Error %d: green write failed\n", ret);
-					return 0;
-				}
-
-				for (pulse_blue = 0U; pulse_blue <= blue_pwm_led.period; pulse_blue += STEP_SIZE)
-				{
-					ret = pwm_set_pulse_dt(&blue_pwm_led, pulse_blue);
-					if (ret != 0)
-					{
-						printk("Error %d: "
-							   "blue write failed\n",
-							   ret);
-						return 0;
-					}
-					k_sleep(K_SECONDS(1));
-					ret = gpio_pin_toggle_dt(&led);
-				}
-				ret = gpio_pin_toggle_dt(&led);
-			}
-			ret = gpio_pin_toggle_dt(&led);
+			/* Process `len` bytes of data */
+			print_uart(rx_data, len);
 		}
 	}
-	return 0;
+}
+
+void uart_cb(const struct device *dev, struct uart_event *evt, void *user_data)
+{
+	switch (evt->type)
+	{
+	case UART_RX_RDY:
+		/* Data received; place into ring buffer */
+		ring_buf_put(&ring_buf, evt->data.rx.buf + evt->data.rx.offset, evt->data.rx.len);
+
+		break;
+
+	case UART_RX_DISABLED:
+		/* Re-enable RX */
+		uart_rx_enable(uart_dev, rx_buffer, sizeof(rx_buffer), RECEIVE_TIMEOUT);
+
+		break;
+
+	default:
+		break;
+	}
+}
+
+int main(void)
+{
+	if (!uart_dev)
+	{
+		printk("Failed to get UART device");
+		return 1;
+	}
+
+	/* uart configuration parameters */
+	int err = uart_configure(uart_dev, &uart_cfg);
+
+	if (err == -ENOSYS)
+	{
+		printk("Configuration is not supported by device or driver,"
+			   " check the UART settings configuration\n");
+		return -ENOSYS;
+	}
+
+	/* Configure uart callback over DMA (Aync UART) */
+	uart_callback_set(uart_dev, uart_cb, NULL);
+
+	/* enable uart reception over DMA (Aync UART)*/
+	uart_rx_enable(uart_dev, rx_buffer, sizeof(rx_buffer), RECEIVE_TIMEOUT);
+
+	printk("\n Enter message to fill RX buffer size :\n");
+
+	/* start uart data processing thread */
+	k_tid_t tid = k_thread_create(&uart_rx_thread_data, uart_rx_stack,
+								  K_THREAD_STACK_SIZEOF(uart_rx_stack), uart_rx_thread, NULL,
+								  NULL, NULL, 5, 0, K_NO_WAIT);
+	k_thread_name_set(tid, "RX_thread");
 }
