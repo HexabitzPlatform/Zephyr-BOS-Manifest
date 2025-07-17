@@ -1,0 +1,17 @@
+description: Hexabitz BOS node
+compatible: "hexabitz,bos"
+
+include: base.yaml
+
+properties:
+  modulePN:
+    type: int
+    required: true
+    description: Hexabitz module part number
+
+  number-ports:
+    type: int
+    required: true
+    description: Number of ports
+
+  

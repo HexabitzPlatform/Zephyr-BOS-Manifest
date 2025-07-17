@@ -4,6 +4,9 @@ zephyr_library()
 # Add source files to the Zephyr library
 zephyr_library_sources(
   src/BOS.c
+  src/BOS_RTOS.c
+  src/BOS_Messaging.c
+  src/MsgParser.c
 )
 
 # Specify include directories for the project

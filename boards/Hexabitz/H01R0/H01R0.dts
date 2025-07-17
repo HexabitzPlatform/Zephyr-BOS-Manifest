@@ -34,6 +34,12 @@
 		blue-pwm-led = &blue_pwm_led;
 	};
 
+	bos {
+		compatible = "hexabitz,bos";
+		modulePN = <1>;
+		number-ports = <6>;
+	};
+
 	leds {
 		compatible = "gpio-leds";
 
