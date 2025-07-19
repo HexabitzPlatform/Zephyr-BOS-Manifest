@@ -16,7 +16,6 @@ void UARTInit(void)
     {
         uart_ports[i].dev = uart_devs[i];
         ring_buf_init(&uart_ports[i].rb, sizeof(uart_ports[i].rb_buffer), uart_ports[i].rb_buffer);
-        uart_ports[i].index = i;
         uart_configure(uart_devs[i], &uart_cfg);
         uart_callback_set(uart_devs[i], uart_callback, &uart_ports[i]);
         uart_rx_enable(uart_devs[i], uart_ports[i].rx_dma_buf, sizeof(uart_ports[i].rx_dma_buf), 0);

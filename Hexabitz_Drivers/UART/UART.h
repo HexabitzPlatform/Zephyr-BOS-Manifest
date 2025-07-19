@@ -35,7 +35,6 @@ struct uart_rx_all_port
     struct ring_buf rb;
     const struct device *dev;
 
-    uint8_t index;
     uint8_t rb_buffer[UART_RX_SIZE];  // buffer used by ring_buf
     uint8_t rx_dma_buf[UART_RX_SIZE]; // buffer passed to uart_rx_enable
 };
