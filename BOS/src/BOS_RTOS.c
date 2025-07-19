@@ -25,6 +25,7 @@ K_THREAD_DEFINE(UserTaskHandle, BOS_TASKS_STACK_SIZE, UserTask, NULL, NULL, NULL
                 USER_TASK_PRIORITY, 0, 0);
 
 /* Create message parsing tasks for module ports */
+
 K_THREAD_DEFINE(P1MsgTaskHandle, BOS_TASKS_STACK_SIZE, PxMessagingTask, NULL, NULL, NULL,
                 PX_MESSAGING_TASK_PRIORITY, 0, 0);
 
