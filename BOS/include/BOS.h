@@ -18,8 +18,8 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
-#include <math.h>	 
-#include <limits.h>	
+#include <math.h>
+#include <limits.h>
 
 #include <UART.h>
 #include <ADC.h>
@@ -28,6 +28,15 @@
 #ifdef CONFIG_BOARD_H01R0
 #include <H01R0.h>
 #endif
+
+// #define BOS_NODE DT_NODELABEL(bos)
+
+// uint32_t ports = DT_PROP(BOS_NODE, number_ports);
+// uint32_t part_number = DT_PROP(BOS_NODE, modulePN);
+
+// #define BOS_NODE DT_NODELABEL(bos)
+// #define BOS_NUMBER_PORTS DT_PROP(BOS_NODE, number_ports)
+// #define BOS_PART_NUMBER DT_PROP(BOS_NODE, modulePN)
 
 void ZephyrKernalInit(void);
 

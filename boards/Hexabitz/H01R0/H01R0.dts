@@ -38,6 +38,8 @@
 		compatible = "hexabitz,bos";
 		modulePN = <1>;
 		number-ports = <6>;
+
+		status = "okay";
 	};
 
 	leds {
