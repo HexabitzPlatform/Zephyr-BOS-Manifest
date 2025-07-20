@@ -6,28 +6,12 @@
 
 #include <BOS.h>
 
-// void print_uart(char *buf, int len)
-// {
-//     for (int i = 0; i < len; i++)
-//     {
-
-//         if ((buf[i] == '\n' || buf[i] == '\r'))
-//         {
-//             uart_poll_out(uart6_dev, '\n');
-//         }
-//         else
-//         {
-//             uart_poll_out(uart6_dev, buf[i]);
-//         }
-//     }
-// }
-
 int main(void)
 {
-    UARTInit();
+    // UARTInit();
 
-    uint8_t rx_data[100];
-    size_t len;
+    // uint8_t rx_data[100];
+    // size_t len;
 
     while (1)
     {

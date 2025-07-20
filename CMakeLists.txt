@@ -14,3 +14,10 @@
 add_subdirectory(BOS)
 add_subdirectory(Hexabitz_Modules)
 add_subdirectory(Hexabitz_Drivers)
+
+# Add custom DTS bindings path
+# list(APPEND DT_EXTRA_BINDINGS_DIR
+#     ${CMAKE_CURRENT_SOURCE_DIR}/dts/bindings/hexabitz
+# )
+
+# zephyr_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/dts/bindings)

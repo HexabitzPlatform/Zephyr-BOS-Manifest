@@ -1,6 +1,8 @@
 
 #include <BOS.h>
 
+static struct uart_rx_all_port uart_ports[NUM_OF_PORTS];
+
 /* uart configuration structure */
 const struct uart_config uart_cfg = {.baudrate = 921600,
                                      .parity = UART_CFG_PARITY_NONE,
@@ -84,82 +86,62 @@ void uart_callback(const struct device *dev, struct uart_event *evt, void *user_
 /***************************************************************************/
 const struct device *GetUart(enum PortNames_e port)
 {
+    if (port >= NUM_OF_PORTS)
+    {
+        return NULL; /* Invalid port index */
+    }
+
+    /* Use constant indices for DT_PHANDLE_BY_IDX */
     switch (port)
     {
-#ifdef _P1
     case P1:
-        return UART_P1;
-#endif
-#ifdef _P2
+        return DEVICE_DT_GET(DT_PHANDLE_BY_IDX(PORT_MAPPING_NODE, ports, 0));
     case P2:
-        return UART_P2;
-#endif
-#ifdef _P3
+        return DEVICE_DT_GET(DT_PHANDLE_BY_IDX(PORT_MAPPING_NODE, ports, 1));
     case P3:
-        return UART_P3;
-#endif
-#ifdef _P4
+        return DEVICE_DT_GET(DT_PHANDLE_BY_IDX(PORT_MAPPING_NODE, ports, 2));
     case P4:
-        return UART_P4;
-#endif
-#ifdef _P5
+        return DEVICE_DT_GET(DT_PHANDLE_BY_IDX(PORT_MAPPING_NODE, ports, 3));
     case P5:
-        return UART_P5;
-#endif
-#ifdef _P6
+        return DEVICE_DT_GET(DT_PHANDLE_BY_IDX(PORT_MAPPING_NODE, ports, 4));
     case P6:
-        return UART_P6;
-#endif
+        return DEVICE_DT_GET(DT_PHANDLE_BY_IDX(PORT_MAPPING_NODE, ports, 5));
+    default:
+        return NULL; /* Invalid port */
     }
-
-    return 0;
 }
 /***************************************************************************/
-uint8_t GetPort(const struct device *uart_dev)
+int GetPort(const struct device *uart_dev)
 {
-    /* Map UART device to port */
-    if (uart_dev == &uart_devs[UART_4])
-    { /* usart4 */
-        return P1;
-    }
-    else if (uart_dev == &uart_devs[UART_2])
-    { /* usart2 */
-        return P2;
-    }
-    else if (uart_dev == &uart_devs[UART_3])
-    { /* usart3 */
-        return P3;
-    }
-    else if (uart_dev == &uart_devs[UART_1])
-    { /* usart1 */
-        return P4;
-    }
-    else if (uart_dev == &uart_devs[UART_5])
-    { /* usart5 */
-        return P5;
-    }
-    else if (uart_dev == &uart_devs[UART_6])
-    { /* usart6 */
-        return P6;
+    if (!uart_dev)
+    {
+        return -EINVAL; /* Invalid device */
     }
 
-    return 0;
+    /* Iterate through the ports property at compile time */
+    DT_FOREACH_PROP_ELEM(PORT_MAPPING_NODE, ports, CHECK_PORT);
+
+    return -ENODEV; /* Device not found */
 }
 /***************************************************************************/
 BOS_Status UpdateBaudrate(uint8_t port, uint32_t baudrate)
 {
+    return 0;
 }
 /***************************************************************************/
 void SwapUartPins(UART_HandleTypeDef *huart, uint8_t direction)
 {
+    // return 0;
 }
 /***************************************************************************/
 BOS_Status ReadPortsDir(void)
 {
+    return 0;
 }
 /***************************************************************************/
 BOS_Status UpdateMyPortsDir(void)
 {
+    return 0;
 }
 
 /***************************************************************************/

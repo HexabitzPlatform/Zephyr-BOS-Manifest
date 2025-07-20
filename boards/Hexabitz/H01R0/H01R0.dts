@@ -11,7 +11,6 @@
 / {
 	model = "Hexabitz RGB LED - H01R0 board";
 	compatible = "Hexabitz,H01R0","st,stm32g0b1";
-	// compatible = "st,stm32g0b1re-nucleo";
 
 	chosen {
 		zephyr,console = &usart2;
@@ -34,10 +33,20 @@
 		blue-pwm-led = &blue_pwm_led;
 	};
 
-	bos {
+	bos: bos {
 		compatible = "hexabitz,bos";
 		modulePN = <1>;
 		number-ports = <6>;
+
+		status = "okay";
+	};
+
+	port_mapping: port-mapping {
+		compatible = "hexabitz,port-mapping";
+
+		ports = <&usart4 &usart2 &usart3 &usart1 &usart5 &usart6>;
+		port-names = "P1", "P2", "P3", "P4", "P5", "P6";
+		label = "PORT_MAPPING";
 
 		status = "okay";
 	};
@@ -118,6 +127,8 @@
 	dmas = <&dmamux1 0 50 (STM32_DMA_PERIPH_RX | STM32_DMA_MEM_8BITS | STM32_DMA_MODE_CYCLIC)>;
 	dma-names = "rx";
 	status = "okay";
+
+	#port-cells = <0>;
 };
 
 &usart2 {
@@ -127,6 +138,8 @@
 	dmas = <&dmamux1 1 52 (STM32_DMA_PERIPH_RX | STM32_DMA_MEM_8BITS | STM32_DMA_MODE_CYCLIC)>;
 	dma-names = "rx";
 	status = "okay";
+
+	#port-cells = <0>;
 };
 
 &usart3 {
@@ -136,6 +149,8 @@
 	dmas = <&dmamux1 2 54 (STM32_DMA_PERIPH_RX | STM32_DMA_MEM_8BITS | STM32_DMA_MODE_CYCLIC)>;
 	dma-names = "rx";
 	status = "okay";
+
+	#port-cells = <0>;
 };
 
 &usart4 {
@@ -145,6 +160,8 @@
 	dmas = <&dmamux1 3 56 (STM32_DMA_PERIPH_RX | STM32_DMA_MEM_8BITS | STM32_DMA_MODE_CYCLIC)>;
 	dma-names = "rx";
 	status = "okay";
+
+	#port-cells = <0>;
 };
 
 &usart5 {
@@ -154,6 +171,8 @@
 	dmas = <&dmamux1 4 74 (STM32_DMA_PERIPH_RX | STM32_DMA_MEM_8BITS | STM32_DMA_MODE_CYCLIC)>;
 	dma-names = "rx";
 	status = "okay";
+
+	#port-cells = <0>;
 };
 
 &usart6 {
@@ -163,6 +182,8 @@
 	dmas = <&dmamux1 5 76 (STM32_DMA_PERIPH_RX | STM32_DMA_MEM_8BITS | STM32_DMA_MODE_CYCLIC)>;
 	dma-names = "rx";
 	status = "okay";
+
+	#port-cells = <0>;
 };
 
 &rtc {

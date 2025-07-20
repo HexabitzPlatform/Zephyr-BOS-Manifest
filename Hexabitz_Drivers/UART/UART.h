@@ -16,6 +16,9 @@
 #define UART_RX_SIZE 192
 #define MAX_MESSAGE_SIZE 56
 
+#define PORT_MAPPING_NODE DT_NODELABEL(port_mapping)
+#define NUM_OF_PORTS DT_PROP_LEN(PORT_MAPPING_NODE, ports)
+
 #if DT_NODE_EXISTS(DT_NODELABEL(usart1))
 #define UART_1_DEVICE_NODE DT_NODELABEL(usart1)
 // static const struct device *const uart1_dev = DEVICE_DT_GET(UART_1_DEVICE_NODE);
@@ -46,6 +49,7 @@
 // static const struct device *const uart6_dev = DEVICE_DT_GET(UART_6_DEVICE_NODE);
 #endif
 
+/*
 #define NUM_OF_PORTS                        \
     (DT_NODE_EXISTS(DT_NODELABEL(usart1)) + \
      DT_NODE_EXISTS(DT_NODELABEL(usart2)) + \
@@ -53,6 +57,7 @@
      DT_NODE_EXISTS(DT_NODELABEL(usart4)) + \
      DT_NODE_EXISTS(DT_NODELABEL(usart5)) + \
      DT_NODE_EXISTS(DT_NODELABEL(usart6)))
+*/
 
 static const struct device *const uart_devs[NUM_OF_PORTS] = {
 #if DT_NODE_EXISTS(DT_NODELABEL(usart1))
@@ -80,6 +85,13 @@ static const struct device *const uart_devs[NUM_OF_PORTS] = {
 #endif
 };
 
+/* Helper macro for DT_FOREACH_PROP_ELEM */
+#define CHECK_PORT(node_id, prop, idx)                                               \
+    if (DEVICE_DT_GET(DT_PHANDLE_BY_IDX(PORT_MAPPING_NODE, ports, idx)) == uart_dev) \
+    {                                                                                \
+        return idx;                                                                  \
+    }
+
 struct uart_rx_all_port
 {
     struct ring_buf rb;
@@ -90,13 +102,11 @@ struct uart_rx_all_port
 
 void UARTInit(void);
 
-// UART_HandleTypeDef *GetUart(uint8_t port);
 const struct device *GetUart(enum PortNames_e port);
-uint8_t GetPort(const struct device *uart_dev);
+int GetPort(const struct device *uart_dev);
 BOS_Status UpdateBaudrate(uint8_t port, uint32_t baudrate);
 void SwapUartPins(UART_HandleTypeDef *huart, uint8_t direction);
 BOS_Status ReadPortsDir(void);
 BOS_Status UpdateMyPortsDir(void);
 
-static struct uart_rx_all_port uart_ports[NUM_OF_PORTS];
 #endif
