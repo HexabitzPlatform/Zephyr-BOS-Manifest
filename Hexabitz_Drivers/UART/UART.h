@@ -1,20 +1,8 @@
 #ifndef UART_H
 #define UART_H
 
-// /* C STD Library */
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <stdarg.h>
-// #include <string.h>
-// #include <ctype.h>
-// #include <math.h>
-// #include <limits.h>
-
+/* Includes ****************************************************************/
 #include <BOS.h>
-
-// #define UART_PORTS 6
-#define UART_RX_SIZE 192
-#define MAX_MESSAGE_SIZE 56
 
 #define PORT_MAPPING_NODE DT_NODELABEL(port_mapping)
 #define NUM_OF_PORTS DT_PROP_LEN(PORT_MAPPING_NODE, ports)
@@ -96,7 +84,7 @@ struct uart_rx_all_port
 {
     struct ring_buf rb;
 
-    uint8_t rb_buffer[UART_RX_SIZE];      // buffer used by ring_buf
+    uint8_t rb_buffer[MSG_RX_BUF_SIZE];   // buffer used by ring_buf
     uint8_t rx_dma_buf[MAX_MESSAGE_SIZE]; // buffer passed to uart_rx_enable
 };
 
@@ -105,7 +93,7 @@ void UARTInit(void);
 const struct device *GetUart(enum PortNames_e port);
 int GetPort(const struct device *uart_dev);
 BOS_Status UpdateBaudrate(uint8_t port, uint32_t baudrate);
-void SwapUartPins(UART_HandleTypeDef *huart, uint8_t direction);
+void SwapUartPins(const struct device *uart_dev, uint8_t direction);
 BOS_Status ReadPortsDir(void);
 BOS_Status UpdateMyPortsDir(void);
 

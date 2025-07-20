@@ -37,6 +37,17 @@ enum PortNames_e
     P_VIRTUAL /* Virtual port for transfer stream data from source module by specific port to specific memory address in destination module */
 };
 
+/* Available UART on the module */
+enum UARTNames_e
+{
+    UART_1 = 0,
+    UART_2,
+    UART_3,
+    UART_4,
+    UART_5,
+    UART_6
+};
+
 /* Button names on the module */
 enum ButtonNames_e
 {
@@ -165,15 +176,7 @@ enum Daylight_e
 /***************************************************************************/
 /* Typedef Definitions *****************************************************/
 /***************************************************************************/
-enum
-{
-    UART_1 = 0,
-    UART_2,
-    UART_3,
-    UART_4,
-    UART_5,
-    UART_6
-};
+
 /* Typedef Enumeration Definitions *****************************************/
 /* RTC time periods (AM/PM) */
 typedef enum
@@ -528,6 +531,9 @@ typedef struct
 #include <H01R0.h>
 #endif
 
+/***********************************************************************************************/
+extern uint16_t ArrayPortsDir[MAX_NUM_OF_MODULES]; /* Array ports directions */
+extern uint8_t myID;
 // #define BOS_NODE DT_NODELABEL(bos)
 
 // uint32_t ports = DT_PROP(BOS_NODE, number_ports);
