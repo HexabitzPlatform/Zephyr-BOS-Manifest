@@ -185,6 +185,8 @@ BOS_Status UpdateBaudrate(uint8_t port, uint32_t baudrate)
     const struct device *uart_dev = GetUart(port);
     struct uart_config newConfig;
 
+    uart_config_get(uart_dev, &newConfig);
+
     newConfig.baudrate = baudrate;
 
     uart_configure(uart_dev, &newConfig);

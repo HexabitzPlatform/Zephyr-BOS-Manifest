@@ -89,12 +89,12 @@ struct uart_rx_all_port
 };
 
 void UARTInit(void);
+void SwapUartPins(const struct device *uart_dev, uint8_t direction);
 
 const struct device *GetUart(enum PortNames_e port);
 int GetPort(const struct device *uart_dev);
-BOS_Status UpdateBaudrate(uint8_t port, uint32_t baudrate);
-void SwapUartPins(const struct device *uart_dev, uint8_t direction);
+
 BOS_Status ReadPortsDir(void);
-BOS_Status UpdateMyPortsDir(void);
+BOS_Status UpdateBaudrate(uint8_t port, uint32_t baudrate);
 
 #endif
