@@ -3,7 +3,7 @@
 #include <BOS.h>
 #include <stm32_ll_usart.h>
 
-static struct uart_rx_all_port uart_ports[NUM_OF_PORTS];
+struct uart_rx_all_port uart_ring_buffer[NUM_OF_PORTS];
 
 void uart_callback(const struct device *dev, struct uart_event *evt, void *user_data);
 /***************************************************************************/
@@ -21,45 +21,45 @@ void UARTInit(void)
 {
 
 #if DT_NODE_EXISTS(DT_NODELABEL(usart1))
-    ring_buf_init(&uart_ports[UART_1].rb, sizeof(uart_ports[UART_1].rb_buffer), uart_ports[UART_1].rb_buffer);
+    ring_buf_init(&uart_ring_buffer[UART_1].rb, sizeof(uart_ring_buffer[UART_1].rb_buffer), uart_ring_buffer[UART_1].rb_buffer);
     uart_configure(uart_devs[UART_1], &uart_cfg);
-    uart_callback_set(uart_devs[UART_1], uart_callback, &uart_ports[UART_1]);
-    uart_rx_enable(uart_devs[UART_1], uart_ports[UART_1].rx_dma_buf, sizeof(uart_ports[UART_1].rx_dma_buf), 0);
+    uart_callback_set(uart_devs[UART_1], uart_callback, &uart_ring_buffer[UART_1]);
+    uart_rx_enable(uart_devs[UART_1], uart_ring_buffer[UART_1].rx_dma_buf, sizeof(uart_ring_buffer[UART_1].rx_dma_buf), 0);
 #endif
 
 #if DT_NODE_EXISTS(DT_NODELABEL(usart2))
-    ring_buf_init(&uart_ports[UART_2].rb, sizeof(uart_ports[UART_2].rb_buffer), uart_ports[UART_2].rb_buffer);
+    ring_buf_init(&uart_ring_buffer[UART_2].rb, sizeof(uart_ring_buffer[UART_2].rb_buffer), uart_ring_buffer[UART_2].rb_buffer);
     uart_configure(uart_devs[UART_2], &uart_cfg);
-    uart_callback_set(uart_devs[UART_2], uart_callback, &uart_ports[UART_2]);
-    uart_rx_enable(uart_devs[UART_2], uart_ports[UART_2].rx_dma_buf, sizeof(uart_ports[UART_2].rx_dma_buf), 0);
+    uart_callback_set(uart_devs[UART_2], uart_callback, &uart_ring_buffer[UART_2]);
+    uart_rx_enable(uart_devs[UART_2], uart_ring_buffer[UART_2].rx_dma_buf, sizeof(uart_ring_buffer[UART_2].rx_dma_buf), 0);
 #endif
 
 #if DT_NODE_EXISTS(DT_NODELABEL(usart3))
-    ring_buf_init(&uart_ports[UART_3].rb, sizeof(uart_ports[UART_3].rb_buffer), uart_ports[UART_3].rb_buffer);
+    ring_buf_init(&uart_ring_buffer[UART_3].rb, sizeof(uart_ring_buffer[UART_3].rb_buffer), uart_ring_buffer[UART_3].rb_buffer);
     uart_configure(uart_devs[UART_3], &uart_cfg);
-    uart_callback_set(uart_devs[UART_3], uart_callback, &uart_ports[UART_3]);
-    uart_rx_enable(uart_devs[UART_3], uart_ports[UART_3].rx_dma_buf, sizeof(uart_ports[UART_3].rx_dma_buf), 0);
+    uart_callback_set(uart_devs[UART_3], uart_callback, &uart_ring_buffer[UART_3]);
+    uart_rx_enable(uart_devs[UART_3], uart_ring_buffer[UART_3].rx_dma_buf, sizeof(uart_ring_buffer[UART_3].rx_dma_buf), 0);
 #endif
 
 #if DT_NODE_EXISTS(DT_NODELABEL(usart4))
-    ring_buf_init(&uart_ports[UART_4].rb, sizeof(uart_ports[UART_4].rb_buffer), uart_ports[UART_4].rb_buffer);
+    ring_buf_init(&uart_ring_buffer[UART_4].rb, sizeof(uart_ring_buffer[UART_4].rb_buffer), uart_ring_buffer[UART_4].rb_buffer);
     uart_configure(uart_devs[UART_4], &uart_cfg);
-    uart_callback_set(uart_devs[UART_4], uart_callback, &uart_ports[UART_4]);
-    uart_rx_enable(uart_devs[UART_4], uart_ports[UART_4].rx_dma_buf, sizeof(uart_ports[UART_4].rx_dma_buf), 0);
+    uart_callback_set(uart_devs[UART_4], uart_callback, &uart_ring_buffer[UART_4]);
+    uart_rx_enable(uart_devs[UART_4], uart_ring_buffer[UART_4].rx_dma_buf, sizeof(uart_ring_buffer[UART_4].rx_dma_buf), 0);
 #endif
 
 #if DT_NODE_EXISTS(DT_NODELABEL(usart5))
-    ring_buf_init(&uart_ports[UART_5].rb, sizeof(uart_ports[UART_5].rb_buffer), uart_ports[UART_5].rb_buffer);
+    ring_buf_init(&uart_ring_buffer[UART_5].rb, sizeof(uart_ring_buffer[UART_5].rb_buffer), uart_ring_buffer[UART_5].rb_buffer);
     uart_configure(uart_devs[UART_5], &uart_cfg);
-    uart_callback_set(uart_devs[UART_5], uart_callback, &uart_ports[UART_5]);
-    uart_rx_enable(uart_devs[UART_5], uart_ports[UART_5].rx_dma_buf, sizeof(uart_ports[UART_5].rx_dma_buf), 0);
+    uart_callback_set(uart_devs[UART_5], uart_callback, &uart_ring_buffer[UART_5]);
+    uart_rx_enable(uart_devs[UART_5], uart_ring_buffer[UART_5].rx_dma_buf, sizeof(uart_ring_buffer[UART_5].rx_dma_buf), 0);
 #endif
 
 #if DT_NODE_EXISTS(DT_NODELABEL(usart6))
-    ring_buf_init(&uart_ports[UART_6].rb, sizeof(uart_ports[UART_6].rb_buffer), uart_ports[UART_6].rb_buffer);
+    ring_buf_init(&uart_ring_buffer[UART_6].rb, sizeof(uart_ring_buffer[UART_6].rb_buffer), uart_ring_buffer[UART_6].rb_buffer);
     uart_configure(uart_devs[UART_6], &uart_cfg);
-    uart_callback_set(uart_devs[UART_6], uart_callback, &uart_ports[UART_6]);
-    uart_rx_enable(uart_devs[UART_6], uart_ports[UART_6].rx_dma_buf, sizeof(uart_ports[UART_6].rx_dma_buf), 0);
+    uart_callback_set(uart_devs[UART_6], uart_callback, &uart_ring_buffer[UART_6]);
+    uart_rx_enable(uart_devs[UART_6], uart_ring_buffer[UART_6].rx_dma_buf, sizeof(uart_ring_buffer[UART_6].rx_dma_buf), 0);
 #endif
 }
 /***************************************************************************/
@@ -67,12 +67,17 @@ void uart_callback(const struct device *dev, struct uart_event *evt, void *user_
 {
     struct uart_rx_all_port *uart_rx_procces = (struct uart_rx_all_port *)user_data;
 
+    // size_t len;
+    uint8_t rx_data[100];
+
     switch (evt->type)
     {
     case UART_RX_RDY:
         ring_buf_put(&uart_rx_procces->rb,
                      evt->data.rx.buf + evt->data.rx.offset,
                      evt->data.rx.len);
+        ring_buf_get(&uart_rx_procces->rb, rx_data, sizeof(rx_data));
+        uart_poll_out(dev, rx_data[0]);
         break;
 
     case UART_RX_DISABLED:
@@ -171,7 +176,7 @@ void SwapUartPins(const struct device *uart_dev, uint8_t direction)
 
     /* Set up DMA reception */
     uart_rx_disable(uart_dev);
-    uart_rx_enable(uart_dev, uart_ports[port].rx_dma_buf, sizeof(uart_ports[port].rx_dma_buf), 0);
+    uart_rx_enable(uart_dev, uart_ring_buffer[port].rx_dma_buf, sizeof(uart_ring_buffer[port].rx_dma_buf), 0);
 }
 /***************************************************************************/
 BOS_Status ReadPortsDir(void)

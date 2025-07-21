@@ -97,4 +97,6 @@ int GetPort(const struct device *uart_dev);
 BOS_Status ReadPortsDir(void);
 BOS_Status UpdateBaudrate(uint8_t port, uint32_t baudrate);
 
+extern struct uart_rx_all_port uart_ring_buffer[NUM_OF_PORTS];
+
 #endif

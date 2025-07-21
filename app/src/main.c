@@ -6,27 +6,35 @@
 
 #include <BOS.h>
 
+static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(DT_ALIAS(module_led), gpios);
+void UserTask(void *p1, void *p2, void *p3);
+
 int main(void)
 {
     // UARTInit();
 
-    // uint8_t rx_data[100];
-    // size_t len;
-
     while (1)
     {
-
-        // /* Check if there's data in the ring buffer */
-        // len = ring_buf_get(&uart2_dev, rx_data, sizeof(rx_data));
-
-        // if (len > 0)
-        // {
-        //     /* Process `len` bytes of data */
-        //     print_uart(rx_data, len);
-        // }
     }
 }
 
-void UserTask(void)
+void UserTask(void *p1, void *p2, void *p3)
 {
+    ZephyrKernalInit();
+
+    UARTInit();
+
+    // bool led_state = true;
+    // int ret;
+
+    gpio_is_ready_dt(&led);
+
+    gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE);
+
+    while (1)
+    {
+        gpio_pin_toggle_dt(&led);
+
+        k_sleep(K_SECONDS(1));
+    }
 }
