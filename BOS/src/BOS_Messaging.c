@@ -1,47 +1,68 @@
 /* Includes ****************************************************************/
+#include <zephyr/kernel.h>
 #include <BOS.h>
-
-K_POLL_SIGNAL_DEFINE(p1_signal);
-K_POLL_SIGNAL_DEFINE(p2_signal);
-K_POLL_SIGNAL_DEFINE(p3_signal);
-K_POLL_SIGNAL_DEFINE(p4_signal);
-K_POLL_SIGNAL_DEFINE(p5_signal);
-K_POLL_SIGNAL_DEFINE(p6_signal);
 
 /***************************************************************************/
 /* BackEndTask function ****************************************************/
 /***************************************************************************/
-void BackEndTask(void *p1, void *p2, void *p3)
+void BackEndTask(void)
 {
-    struct k_poll_signal BackendTask_signal;
-    struct k_poll_event BackendTask_event = {
-        .type = K_POLL_TYPE_SIGNAL,
-        .mode = K_POLL_MODE_NOTIFY_ONLY,
-        .signal = &BackendTask_signal,
-    };
+    // struct k_poll_event BackendTask_event = {
+    //     .type = K_POLL_TYPE_SIGNAL,
+    //     .mode = K_POLL_MODE_NOTIFY_ONLY,
+    //     .signal = &BackendTask_signal,
+    // };
+
+    // /* Initialize the poll signal */
+    // k_poll_signal_init(&BackendTask_signal);
+
+    uint8_t temp[64];
+
     while (1)
     {
-        K_poll(BackendTask_event, 0, K_FOREVER);
+        // k_poll(&BackendTask_event, 1, K_FOREVER);
 
-        // Parse UART data
-        // Notify P1..P6 accordingly
-        // k_poll_signal_raise(&p1_signal, 0);
+        // /* Clear the signal state so the next k_poll works */
+        // k_poll_signal_reset(&BackendTask_signal);
+
+        // struct uart_rx_all_port *uart_rx = &uart_ring_buffer;
+
+        // ring_buf_get(&uart_rx->rb, temp, sizeof(temp));
+
+        // uart_poll_out(uart_rx->port, temp[0]);
+
+        if (k_msgq_get(&uart_event_queue, &msg, K_FOREVER) == 0)
+        {
+            uint8_t port = msg.port_index;
+            struct uart_rx_all_port *uart_rx = &uart_ring_buffer[port];
+
+            ring_buf_get(&uart_rx->rb, temp, sizeof(temp));
+
+            uart_poll_out(uart_rx->port, temp[0]);
+
+            // Now you know which UART triggered it
+            // struct uart_rx_all_port *uart_rx = &uart_ring_buffer[port];
+
+            // k_poll_signal_raise(&PxMessagingTask_signal, 0);
+        }
     }
 }
 
 /***************************************************************************/
 /* PxMessagingTask function ************************************************/
 /***************************************************************************/
-void PxMessagingTask(void *p1, void *p2, void *p3)
+void PxMessagingTask(void)
 {
-    struct k_poll_signal PxMessagingTask_signal;
     struct k_poll_event PxMessagingTask_event = {
         .type = K_POLL_TYPE_SIGNAL,
         .mode = K_POLL_MODE_NOTIFY_ONLY,
         .signal = &PxMessagingTask_signal,
     };
+
+    /* Initialize the poll signal */
+    k_poll_signal_init(&PxMessagingTask_signal);
     while (1)
     {
-        K_poll(PxMessagingTask_event, 0, K_FOREVER);
+        k_poll(&PxMessagingTask_event, 1, K_FOREVER);
     }
 }

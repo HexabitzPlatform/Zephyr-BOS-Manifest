@@ -7,25 +7,10 @@
 #include <BOS.h>
 
 static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(DT_ALIAS(module_led), gpios);
-void UserTask(void *p1, void *p2, void *p3);
 
-int main(void)
+void UserTask(void)
 {
-    // UARTInit();
-
-    while (1)
-    {
-    }
-}
-
-void UserTask(void *p1, void *p2, void *p3)
-{
-    ZephyrKernalInit();
-
     UARTInit();
-
-    // bool led_state = true;
-    // int ret;
 
     gpio_is_ready_dt(&led);
 

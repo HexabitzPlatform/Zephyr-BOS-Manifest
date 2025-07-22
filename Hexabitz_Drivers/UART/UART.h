@@ -84,6 +84,8 @@ struct uart_rx_all_port
 {
     struct ring_buf rb;
 
+    const struct device *port;
+
     uint8_t rb_buffer[MSG_RX_BUF_SIZE];   // buffer used by ring_buf
     uint8_t rx_dma_buf[MAX_MESSAGE_SIZE]; // buffer passed to uart_rx_enable
 };
@@ -96,7 +98,5 @@ int GetPort(const struct device *uart_dev);
 
 BOS_Status ReadPortsDir(void);
 BOS_Status UpdateBaudrate(uint8_t port, uint32_t baudrate);
-
-extern struct uart_rx_all_port uart_ring_buffer[NUM_OF_PORTS];
 
 #endif

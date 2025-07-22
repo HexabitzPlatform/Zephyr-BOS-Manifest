@@ -3,12 +3,6 @@
 #include <BOS.h>
 #include <stm32_ll_usart.h>
 
-struct uart_rx_all_port uart_ring_buffer[NUM_OF_PORTS];
-
-void uart_callback(const struct device *dev, struct uart_event *evt, void *user_data);
-/***************************************************************************/
-/* Configure UARTs *********************************************************/
-/***************************************************************************/
 /* uart configuration structure */
 const struct uart_config uart_cfg = {.baudrate = 921600,
                                      .parity = UART_CFG_PARITY_NONE,
@@ -16,6 +10,10 @@ const struct uart_config uart_cfg = {.baudrate = 921600,
                                      .data_bits = UART_CFG_DATA_BITS_8,
                                      .flow_ctrl = UART_CFG_FLOW_CTRL_NONE};
 
+void uart_callback(const struct device *dev, struct uart_event *evt, void *user_data);
+
+/***************************************************************************/
+/* Configure UARTs *********************************************************/
 /***************************************************************************/
 void UARTInit(void)
 {
@@ -66,9 +64,7 @@ void UARTInit(void)
 void uart_callback(const struct device *dev, struct uart_event *evt, void *user_data)
 {
     struct uart_rx_all_port *uart_rx_procces = (struct uart_rx_all_port *)user_data;
-
-    // size_t len;
-    uint8_t rx_data[100];
+    uart_rx_procces->port = dev;
 
     switch (evt->type)
     {
@@ -76,8 +72,21 @@ void uart_callback(const struct device *dev, struct uart_event *evt, void *user_
         ring_buf_put(&uart_rx_procces->rb,
                      evt->data.rx.buf + evt->data.rx.offset,
                      evt->data.rx.len);
-        ring_buf_get(&uart_rx_procces->rb, rx_data, sizeof(rx_data));
-        uart_poll_out(dev, rx_data[0]);
+
+        // Determine the port_index from dev
+        for (int i = 0; i < NUM_OF_PORTS; ++i)
+        {
+            if (uart_devs[i] == dev)
+            {
+                msg.port_index = i;
+                break;
+            }
+        }
+
+        // Send the message to the backend task
+        k_msgq_put(&uart_event_queue, &msg, K_NO_WAIT);
+
+        // k_poll_signal_raise(&BackendTask_signal, 0);
         break;
 
     case UART_RX_DISABLED:

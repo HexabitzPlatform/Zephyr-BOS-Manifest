@@ -513,6 +513,9 @@ typedef struct
 /***************************************************************************/
 /* Includes ****************************************************************/
 /***************************************************************************/
+
+#include <BOS_RTOS.h>
+
 #include <zephyr/kernel.h>
 #include <zephyr/devicetree.h>
 #include <zephyr/device.h>
@@ -543,6 +546,15 @@ extern uint8_t myID;
 // #define BOS_NUMBER_PORTS DT_PROP(BOS_NODE, number_ports)
 // #define BOS_PART_NUMBER DT_PROP(BOS_NODE, modulePN)
 
-void ZephyrKernalInit(void);
+struct uart_event_msg
+{
+    uint8_t port_index;
+};
+
+extern struct uart_rx_all_port uart_ring_buffer[NUM_OF_PORTS];
+extern struct k_poll_signal PxMessagingTask_signal;
+// extern struct k_poll_signal BackendTask_signal;
+extern struct k_msgq uart_event_queue;
+extern struct uart_event_msg msg;
 
 #endif

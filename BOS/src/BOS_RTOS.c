@@ -1,78 +1,59 @@
 #include <BOS.h>
 
+/* Thread Stack Size */
 #define BOS_TASKS_STACK_SIZE 1024
 
+/* Thread priorities */
 #define BACKEND_TASK_PRIORITY 5
 #define PX_MESSAGING_TASK_PRIORITY 4
 #define DEFAULT_TASK_PRIORITY 3
 #define USER_TASK_PRIORITY 3
 
-void BackEndTask(void *p1, void *p2, void *p3);
-void PxMessagingTask(void *p1, void *p2, void *p3);
-void DefaultTask(void *p1, void *p2, void *p3);
-void UserTask(void *p1, void *p2, void *p3);
+void BackEndTask(void);
+void PxMessagingTask(void);
+void DefaultTask(void);
+void UserTask(void);
 
-/* Define thread stacks */
-K_THREAD_STACK_DEFINE(backend_stack, BOS_TASKS_STACK_SIZE);
-K_THREAD_STACK_DEFINE(default_stack, BOS_TASKS_STACK_SIZE);
-K_THREAD_STACK_DEFINE(user_stack, BOS_TASKS_STACK_SIZE);
-K_THREAD_STACK_DEFINE(p1_stack, BOS_TASKS_STACK_SIZE);
-K_THREAD_STACK_DEFINE(p2_stack, BOS_TASKS_STACK_SIZE);
-K_THREAD_STACK_DEFINE(p3_stack, BOS_TASKS_STACK_SIZE);
-K_THREAD_STACK_DEFINE(p4_stack, BOS_TASKS_STACK_SIZE);
-K_THREAD_STACK_DEFINE(p5_stack, BOS_TASKS_STACK_SIZE);
-K_THREAD_STACK_DEFINE(p6_stack, BOS_TASKS_STACK_SIZE);
+/* Create the Backend task */
+K_THREAD_DEFINE(BackEndTaskHandle, BOS_TASKS_STACK_SIZE, BackEndTask, NULL, NULL, NULL,
+                BACKEND_TASK_PRIORITY, 0, 0);
 
-/* Define thread control blocks */
-struct k_thread BackEndTaskHandle;
-struct k_thread DefaultTaskHandle;
-struct k_thread UserTaskHandle;
-struct k_thread P1MsgTaskHandle;
-struct k_thread P2MsgTaskHandle;
-struct k_thread P3MsgTaskHandle;
-struct k_thread P4MsgTaskHandle;
-struct k_thread P5MsgTaskHandle;
-struct k_thread P6MsgTaskHandle;
+/* Create the defaultTask */
+K_THREAD_DEFINE(DefaultTaskHandle, BOS_TASKS_STACK_SIZE, DefaultTask, NULL, NULL, NULL,
+                DEFAULT_TASK_PRIORITY, 0, 0);
 
-/* Thread priorities */
-#define THREAD_OPTIONS 0
+/* Create the User task */
+K_THREAD_DEFINE(UserTaskHandle, BOS_TASKS_STACK_SIZE, UserTask, NULL, NULL, NULL,
+                USER_TASK_PRIORITY, 0, 0);
 
-void ZephyrKernalInit(void)
+/* Create message parsing tasks for module ports */
+
+K_THREAD_DEFINE(P1MsgTaskHandle, BOS_TASKS_STACK_SIZE, PxMessagingTask, NULL, NULL, NULL,
+                PX_MESSAGING_TASK_PRIORITY, 0, 0);
+
+K_THREAD_DEFINE(P2MsgTaskHandle, BOS_TASKS_STACK_SIZE, PxMessagingTask, NULL, NULL, NULL,
+                PX_MESSAGING_TASK_PRIORITY, 0, 0);
+
+K_THREAD_DEFINE(P3MsgTaskHandle, BOS_TASKS_STACK_SIZE, PxMessagingTask, NULL, NULL, NULL,
+                PX_MESSAGING_TASK_PRIORITY, 0, 0);
+
+K_THREAD_DEFINE(P4MsgTaskHandle, BOS_TASKS_STACK_SIZE, PxMessagingTask, NULL, NULL, NULL,
+                PX_MESSAGING_TASK_PRIORITY, 0, 0);
+
+K_THREAD_DEFINE(P5MsgTaskHandle, BOS_TASKS_STACK_SIZE, PxMessagingTask, NULL, NULL, NULL,
+                PX_MESSAGING_TASK_PRIORITY, 0, 0);
+
+K_THREAD_DEFINE(P6MsgTaskHandle, BOS_TASKS_STACK_SIZE, PxMessagingTask, NULL, NULL, NULL,
+                PX_MESSAGING_TASK_PRIORITY, 0, 0);
+
+// Define the message queue instance once
+K_MSGQ_DEFINE(uart_event_queue, sizeof(struct uart_event_msg), 10, 4);
+
+void DefaultTask(void)
 {
-    k_thread_create(&BackEndTaskHandle, backend_stack, K_THREAD_STACK_SIZEOF(backend_stack),
-                    BackEndTask, NULL, NULL, NULL, BACKEND_TASK_PRIORITY, THREAD_OPTIONS, K_NO_WAIT);
-
-    k_thread_create(&DefaultTaskHandle, default_stack, K_THREAD_STACK_SIZEOF(default_stack),
-                    DefaultTask, NULL, NULL, NULL, DEFAULT_TASK_PRIORITY, THREAD_OPTIONS, K_NO_WAIT);
-
-    k_thread_create(&UserTaskHandle, user_stack, K_THREAD_STACK_SIZEOF(user_stack),
-                    UserTask, NULL, NULL, NULL, USER_TASK_PRIORITY, THREAD_OPTIONS, K_NO_WAIT);
-
-    k_thread_create(&P1MsgTaskHandle, p1_stack, K_THREAD_STACK_SIZEOF(p1_stack),
-                    PxMessagingTask, NULL, NULL, NULL, PX_MESSAGING_TASK_PRIORITY, THREAD_OPTIONS, K_NO_WAIT);
-
-    k_thread_create(&P2MsgTaskHandle, p2_stack, K_THREAD_STACK_SIZEOF(p2_stack),
-                    PxMessagingTask, NULL, NULL, NULL, PX_MESSAGING_TASK_PRIORITY, THREAD_OPTIONS, K_NO_WAIT);
-
-    k_thread_create(&P3MsgTaskHandle, p3_stack, K_THREAD_STACK_SIZEOF(p3_stack),
-                    PxMessagingTask, NULL, NULL, NULL, PX_MESSAGING_TASK_PRIORITY, THREAD_OPTIONS, K_NO_WAIT);
-
-    k_thread_create(&P4MsgTaskHandle, p4_stack, K_THREAD_STACK_SIZEOF(p4_stack),
-                    PxMessagingTask, NULL, NULL, NULL, PX_MESSAGING_TASK_PRIORITY, THREAD_OPTIONS, K_NO_WAIT);
-
-    k_thread_create(&P5MsgTaskHandle, p5_stack, K_THREAD_STACK_SIZEOF(p5_stack),
-                    PxMessagingTask, NULL, NULL, NULL, PX_MESSAGING_TASK_PRIORITY, THREAD_OPTIONS, K_NO_WAIT);
-
-    k_thread_create(&P6MsgTaskHandle, p6_stack, K_THREAD_STACK_SIZEOF(p6_stack),
-                    PxMessagingTask, NULL, NULL, NULL, PX_MESSAGING_TASK_PRIORITY, THREAD_OPTIONS, K_NO_WAIT);
-}
-
-void DefaultTask(void *p1, void *p2, void *p3)
-{
-
     while (1)
     {
-
         k_sleep(K_MSEC(10));
+        // k_yield();
     }
 }
