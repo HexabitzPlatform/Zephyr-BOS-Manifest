@@ -548,7 +548,8 @@ extern uint8_t myID;
 
 struct uart_event_msg
 {
-    uint8_t port_index;
+    uint8_t port_index;     // UART port index
+    uint32_t packet_lenght; // Length of received data
 };
 
 extern struct uart_rx_all_port uart_ring_buffer[NUM_OF_PORTS];
