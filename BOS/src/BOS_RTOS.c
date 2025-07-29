@@ -46,8 +46,11 @@ K_THREAD_DEFINE(P5MsgTaskHandle, BOS_TASKS_STACK_SIZE, PxMessagingTask, NULL, NU
 K_THREAD_DEFINE(P6MsgTaskHandle, BOS_TASKS_STACK_SIZE, PxMessagingTask, NULL, NULL, NULL,
                 PX_MESSAGING_TASK_PRIORITY, 0, 0);
 
-// Define the message queue instance once
-K_MSGQ_DEFINE(uart_event_queue, sizeof(struct uart_event_msg), 10, 4);
+// Define the message queue instance
+K_MSGQ_DEFINE(uart_event_msgq, sizeof(uart_data_info), 10, 4);
+K_MSGQ_DEFINE(bos_packet_msgq, sizeof(BOS_Message_t *), GLOBAL_MSG_COUNT, 4);
+
+K_MEM_SLAB_DEFINE(message_slab, sizeof(BOS_Message_t *), GLOBAL_MSG_COUNT, 4);
 
 void DefaultTask(void)
 {

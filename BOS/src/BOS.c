@@ -1,8 +1,8 @@
 #include "BOS.h"
 
-struct uart_rx_all_port uart_ring_buffer[NUM_OF_PORTS];
-struct k_poll_signal PxMessagingTask_signal;
-struct uart_event_msg msg;
+uart_rx_all_port_t uart_ring_buffer[NUM_OF_PORTS];
+uart_event_port_len_t uart_data_info;
+// BOS_Message_t bos_msg;
 
 uint16_t ArrayPortsDir[MAX_NUM_OF_MODULES];
 uint8_t myID = 2;

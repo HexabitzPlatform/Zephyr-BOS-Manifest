@@ -80,7 +80,7 @@ static const struct device *const uart_devs[NUM_OF_PORTS] = {
         return idx;                                                                  \
     }
 
-struct uart_rx_all_port
+typedef struct
 {
     struct ring_buf rb;
 
@@ -88,7 +88,7 @@ struct uart_rx_all_port
     uint8_t port_index;
     uint8_t rb_buffer[MSG_RX_BUF_SIZE];   // buffer used by ring_buf
     uint8_t rx_dma_buf[MAX_MESSAGE_SIZE]; // buffer passed to uart_rx_enable
-};
+} uart_rx_all_port_t;
 
 void UARTInit(void);
 void SwapUartPins(const struct device *uart_dev, uint8_t direction);

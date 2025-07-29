@@ -546,16 +546,33 @@ extern uint8_t myID;
 // #define BOS_NUMBER_PORTS DT_PROP(BOS_NODE, number_ports)
 // #define BOS_PART_NUMBER DT_PROP(BOS_NODE, modulePN)
 
-struct uart_event_msg
+// struct uart_event_port_len
+// {
+//     uint8_t port_index;     // UART port index
+//     uint32_t packet_lenght; // Length of received data
+// };
+
+typedef struct
 {
     uint8_t port_index;     // UART port index
     uint32_t packet_lenght; // Length of received data
-};
+} uart_event_port_len_t;
 
-extern struct uart_rx_all_port uart_ring_buffer[NUM_OF_PORTS];
-extern struct k_poll_signal PxMessagingTask_signal;
-// extern struct k_poll_signal BackendTask_signal;
-extern struct k_msgq uart_event_queue;
-extern struct uart_event_msg msg;
+typedef struct
+{
+    uint8_t data[MAX_MESSAGE_SIZE];
+    uint8_t length;
+    uint8_t port;
+} __aligned(4) BOS_Message_t;
+
+extern struct k_msgq bos_packet_msgq;
+extern struct k_msgq uart_event_msgq;
+extern struct k_mem_slab message_slab;
+
+extern uart_rx_all_port_t uart_ring_buffer[NUM_OF_PORTS];
+extern uart_event_port_len_t uart_data_info;
+// extern BOS_Message_t bos_msg;
+
+#define GLOBAL_MSG_COUNT 10
 
 #endif

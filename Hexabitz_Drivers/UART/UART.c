@@ -75,7 +75,7 @@ void UARTInit(void)
 /***************************************************************************/
 void uart_callback(const struct device *dev, struct uart_event *evt, void *user_data)
 {
-    struct uart_rx_all_port *uart_rx_procces = (struct uart_rx_all_port *)user_data;
+    uart_rx_all_port_t *uart_rx_procces = (uart_rx_all_port_t *)user_data;
 
     switch (evt->type)
     {
@@ -84,11 +84,11 @@ void uart_callback(const struct device *dev, struct uart_event *evt, void *user_
                      evt->data.rx.buf + evt->data.rx.offset,
                      evt->data.rx.len);
 
-        msg.port_index = uart_rx_procces->port_index;
-        msg.packet_lenght = evt->data.rx.len;
+        uart_data_info.port_index = uart_rx_procces->port_index;
+        uart_data_info.packet_lenght = evt->data.rx.len;
 
         // Send the message to the backend task
-        k_msgq_put(&uart_event_queue, &msg, K_NO_WAIT);
+        k_msgq_put(&uart_event_msgq, &uart_data_info, K_NO_WAIT);
 
         break;
 
