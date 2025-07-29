@@ -98,7 +98,7 @@ void BackEndTask(void)
 
                             if (k_msgq_put(&bos_packet_msgq, &msg_ptr, K_NO_WAIT) != 0)
                             {
-                                k_mem_slab_free(&message_slab, (void **)&msg_ptr);
+                                k_mem_slab_free(&message_slab, (void *)&msg_ptr);
                                 printk("⚠️ bos_msgq full, message dropped\n");
                             }
                             else
@@ -135,7 +135,7 @@ void PxMessagingTask(void)
         {
 
             // Free the slab after you're done
-            k_mem_slab_free(&message_slab, (void **)&msg_ptr);
+            k_mem_slab_free(&message_slab, (void *)&msg_ptr);
         }
     }
 }
