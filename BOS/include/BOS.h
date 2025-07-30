@@ -530,10 +530,13 @@ typedef struct
 #include <ADC.h>
 #include <Timer.h>
 
+#include <BOS_MsgCodes.h>
+
 #ifdef CONFIG_BOARD_H01R0
 #include <H01R0.h>
 #endif
 
+extern BOSOptionByte_t OptionByte;
 /***********************************************************************************************/
 extern uint16_t ArrayPortsDir[MAX_NUM_OF_MODULES]; /* Array ports directions */
 extern uint8_t myID;
