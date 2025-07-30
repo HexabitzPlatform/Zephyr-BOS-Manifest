@@ -84,32 +84,55 @@ void BackEndTask(void)
                     byte_index[uart_handler]++;
                     byte_length[uart_handler]--;
 
+                    /* Full message received, allocate buffer */
                     if (byte_length[uart_handler] == 0)
                     {
-                        /* Full message received, allocate buffer */
-                        BOS_Message_t *msg_ptr;
-                        if (k_mem_slab_alloc(&message_slab, (void **)&msg_ptr, K_NO_WAIT) == 0)
+                        uint8_t length = TempMsg[uart_handler][2];
+                        uint8_t dst = TempMsg[uart_handler][3];
+
+                        if ((dst != myID) && (dst != 0) && (dst != BOS_BROADCAST) && (dst != BOS_MULTICAST))
                         {
-                            uint8_t full_len = TempMsg[uart_handler][2] + 1;
-
-                            msg_ptr->port = uart_handler;
-                            msg_ptr->length = full_len;
-                            memcpy(msg_ptr->data, &TempMsg[uart_handler][3], full_len);
-
-                            if (k_msgq_put(&bos_packet_msgq, &msg_ptr, K_NO_WAIT) != 0)
-                            {
-                                k_mem_slab_free(&message_slab, (void *)&msg_ptr);
-                                printk("⚠️ bos_msgq full, message dropped\n");
-                            }
-                            else
-                            {
-                                for (uint32_t i = 0; i < full_len; i++)
-                                    uart_poll_out(uart_rx->port, msg_ptr->data[i]);
-                            }
+                            /* Forward Received Message to Destination module */
                         }
                         else
                         {
-                            printk("❌ No memory in slab, message dropped\n");
+                            /* if dst = myID then do the following: */
+                            /* Prepare CRC Buffer and Calculate CRC */
+                            uint8_t calculated_crc = calculate_crc8(&TempMsg[uart_handler][0], length + 3); // lenght + 'H' + 'Z' bytes
+
+                            /* if crc is correct then notify PxMessagingTask */
+                            if (calculated_crc == TempMsg[uart_handler][length + 3]) // crc byte in the received msg is the last byte
+                            {
+                                BOS_Message_t *msg_ptr;
+                                if (k_mem_slab_alloc(&message_slab, (void **)&msg_ptr, K_NO_WAIT) == 0)
+                                {
+                                    uint8_t msg_length = TempMsg[uart_handler][2];
+
+                                    msg_ptr->port = uart_handler;
+                                    msg_ptr->length = msg_length;
+                                    memcpy(msg_ptr->data, &TempMsg[uart_handler][3], msg_length);
+
+                                    if (k_msgq_put(&bos_packet_msgq, &msg_ptr, K_NO_WAIT) != 0)
+                                    {
+                                        // k_mem_slab_free(&message_slab, (void *)&msg_ptr);
+                                        k_mem_slab_free(&message_slab, (void *)&msg_ptr);
+                                        printk(" BOS_Message_t full, message dropped\n");
+                                    }
+                                    else
+                                    {
+                                        for (uint32_t i = 0; i < msg_length; i++)
+                                            uart_poll_out(uart_rx->port, msg_ptr->data[i]);
+                                    }
+                                }
+                                else
+                                {
+                                    printk(" No memory in slab, message dropped\n");
+                                }
+                            }
+                            else
+                            {
+                                printk("⚠️ CRC mismatch on UART %d\n", uart_handler);
+                            }
                         }
 
                         // Reset parser state
@@ -135,6 +158,7 @@ void PxMessagingTask(void)
         {
 
             // Free the slab after you're done
+            // k_mem_slab_free(&message_slab, (void *)&msg_ptr);
             k_mem_slab_free(&message_slab, (void *)&msg_ptr);
         }
     }

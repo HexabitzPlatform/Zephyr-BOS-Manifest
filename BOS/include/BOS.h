@@ -575,4 +575,6 @@ extern uart_event_port_len_t uart_data_info;
 
 #define GLOBAL_MSG_COUNT 10
 
+uint8_t calculate_crc8(const uint8_t *data, size_t length);
+
 #endif
