@@ -6,9 +6,16 @@ uart_event_port_len_t uart_data_info;
 
 BOS_MessageCode_t code;
 BOSOptionByte_t OptionByte = {0};
+
+uint16_t Array[MAX_NUM_OF_MODULES][MAX_NUM_OF_PORTS + 1] = {{0}}; /* Array topology */
+uint8_t NumberofModulesinArray = 1;
 uint16_t ArrayPortsDir[MAX_NUM_OF_MODULES];
 uint8_t myID = 1;
 
+uint8_t QisEmpty(uint8_t *Q);
+uint8_t minArr(uint8_t *arr, uint8_t *Q);
+
+/***************************************************************************/
 /**
  * @brief Calculates an 8-bit CRC using polynomial 0x4C11DB7 over 4-byte reversed data chunks.
  *
@@ -62,4 +69,143 @@ uint8_t calculate_crc8(const uint8_t *data, size_t length)
     }
 
     return (uint8_t)(crc & 0xFF);
+}
+
+/***************************************************************************/
+/* Find the shortest route from sourceID to desID using Dijkstra's algorithm */
+uint8_t FindRoute(uint8_t sourceID, uint8_t desID)
+{
+
+    uint8_t RouteDist[MAX_NUM_OF_MODULES] = {0};
+    uint8_t RoutePrev[MAX_NUM_OF_MODULES] = {0};
+    uint8_t Route[MAX_NUM_OF_MODULES] = {0};
+
+#ifdef __N
+    uint8_t Q[__N] = {0}; /* Unvisited nodes (0 = unvisited, 1 = visited) */
+#else
+    uint8_t Q[50] = {0}; /* Default size if N not defined */
+#endif
+
+    uint8_t u, v, alt, j = 0;
+
+    /* Input validation */
+    if (sourceID < 1 || sourceID > NumberofModulesinArray || desID < 1 || desID > NumberofModulesinArray)
+    {
+        return 0; /* Invalid node IDs */
+    }
+
+    /* Initialize arrays */
+    memset(Route, 0, sizeof(Route));
+    for (int i = 0; i < NumberofModulesinArray; i++)
+    {
+        RouteDist[i] = 0xFF; /* Infinity for all nodes */
+        RoutePrev[i] = 0;    /* Undefined predecessor */
+        Q[i] = 0;            /* All nodes unvisited */
+    }
+    RouteDist[sourceID - 1] = 0; /* Distance from source to source */
+
+    /* Check direct neighbors */
+    for (int col = 1; col <= 6; col++)
+    {
+        if (Array[sourceID - 1][col] && ((Array[sourceID - 1][col] >> 3) == desID))
+        {
+            RouteDist[desID - 1] = 1;
+            RoutePrev[desID - 1] = sourceID;
+            Route[0] = desID;
+            return col; /* Direct connection found */
+        }
+    }
+
+    /* Dijkstra's algorithm */
+    while (!QisEmpty(Q))
+    {
+        u = minArr(RouteDist, Q);
+        if (u == 0xFF)
+            break;    /* No more reachable unvisited nodes */
+        u += 1;       /* Convert index to node ID */
+        Q[u - 1] = 1; /* Mark as visited */
+
+        if (u == desID)
+            break; /* Destination reached */
+
+        /* Check neighbors */
+        for (uint8_t n = 1; n <= 6; n++)
+        {
+            if (Array[u - 1][n])
+            {
+                v = (Array[u - 1][n] >> 3); /* Get neighbor ID */
+                if (!Q[v - 1])
+                {                               /* Neighbor is unvisited */
+                    alt = RouteDist[u - 1] + 1; /* Edge weight = 1 */
+                    if (alt < RouteDist[v - 1])
+                    {
+                        RouteDist[v - 1] = alt;
+                        RoutePrev[v - 1] = u;
+                    }
+                }
+            }
+        }
+    }
+
+    /* Check if destination is unreachable */
+    if (RouteDist[desID - 1] == 0xFF)
+    {
+        return 0; /* No path exists */
+    }
+
+    /* Reconstruct path */
+    u = desID;
+    while (u != sourceID && RoutePrev[u - 1] != 0)
+    {
+        Route[j++] = u;
+        u = RoutePrev[u - 1];
+    }
+    if (u != sourceID)
+    {
+        return 0; /* Path reconstruction failed */
+    }
+
+    /* Find port from source to first node in path */
+    for (int col = 1; col <= 6; col++)
+    {
+        if (Array[sourceID - 1][col] && ((Array[sourceID - 1][col] >> 3) == Route[j - 1]))
+        {
+            return col;
+        }
+    }
+
+    return 0; /* No valid port found */
+}
+
+/***************************************************************************/
+/* Find index of unvisited node with smallest distance */
+uint8_t minArr(uint8_t *arr, uint8_t *Q)
+{
+    uint8_t smallest = 0xFF;
+    uint8_t index = 0xFF; /* Invalid index if no unvisited nodes */
+    uint8_t found = 0;
+
+    for (int i = 0; i < NumberofModulesinArray; i++)
+    {
+        if (!Q[i] && arr[i] < smallest)
+        {
+            smallest = arr[i];
+            index = i;
+            found = 1;
+        }
+    }
+
+    return index;
+}
+
+/***************************************************************************/
+/* Check if Q is empty (all nodes visited) */
+uint8_t QisEmpty(uint8_t *Q)
+{
+    for (int i = 0; i < NumberofModulesinArray; i++)
+    {
+        if (!Q[i])
+            return 0; /* Q is not empty */
+    }
+    return 1; /* Q is empty */
 }
