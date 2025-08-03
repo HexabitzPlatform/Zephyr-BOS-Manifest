@@ -125,6 +125,7 @@
 	pinctrl-names = "default";
 	current-speed = <115200>;
 	dmas = <&dmamux1 0 50 (STM32_DMA_PERIPH_RX | STM32_DMA_MEM_8BITS | STM32_DMA_MODE_CYCLIC)>;
+	interrupts = <27 0>;
 	dma-names = "rx";
 	status = "okay";
 
@@ -136,6 +137,7 @@
 	pinctrl-names = "default";
 	current-speed = <115200>;
 	dmas = <&dmamux1 1 52 (STM32_DMA_PERIPH_RX | STM32_DMA_MEM_8BITS | STM32_DMA_MODE_CYCLIC)>;
+	interrupts = <28 0>;
 	dma-names = "rx";
 	status = "okay";
 
@@ -147,6 +149,7 @@
 	pinctrl-names = "default";
 	current-speed = <115200>;
 	dmas = <&dmamux1 2 54 (STM32_DMA_PERIPH_RX | STM32_DMA_MEM_8BITS | STM32_DMA_MODE_CYCLIC)>;
+	interrupts = <29 0>;
 	dma-names = "rx";
 	status = "okay";
 
@@ -158,6 +161,7 @@
 	pinctrl-names = "default";
 	current-speed = <115200>;
 	dmas = <&dmamux1 3 56 (STM32_DMA_PERIPH_RX | STM32_DMA_MEM_8BITS | STM32_DMA_MODE_CYCLIC)>;
+	interrupts = <29 0>;
 	dma-names = "rx";
 	status = "okay";
 
@@ -169,6 +173,7 @@
 	pinctrl-names = "default";
 	current-speed = <115200>;
 	dmas = <&dmamux1 4 74 (STM32_DMA_PERIPH_RX | STM32_DMA_MEM_8BITS | STM32_DMA_MODE_CYCLIC)>;
+	interrupts = <29 0>;
 	dma-names = "rx";
 	status = "okay";
 
@@ -180,6 +185,7 @@
 	pinctrl-names = "default";
 	current-speed = <115200>;
 	dmas = <&dmamux1 5 76 (STM32_DMA_PERIPH_RX | STM32_DMA_MEM_8BITS | STM32_DMA_MODE_CYCLIC)>;
+	interrupts = <29 0>;
 	dma-names = "rx";
 	status = "okay";
 
