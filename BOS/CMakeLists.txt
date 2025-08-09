@@ -7,7 +7,7 @@ zephyr_library_sources(
   src/BOS_RTOS.c
   src/BOS_Messaging.c
   src/BOS_MsgParser.c
-  src/BOS_Shell.c
+  # src/BOS_Shell.c
 )
 
 # Specify include directories for the project

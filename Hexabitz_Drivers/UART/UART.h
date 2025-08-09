@@ -88,6 +88,7 @@ typedef struct
     uint8_t port_index;
     uint8_t rb_buffer[MSG_RX_BUF_SIZE];   // buffer used by ring_buf
     uint8_t rx_dma_buf[MAX_MESSAGE_SIZE]; // buffer passed to uart_rx_enable
+    uint8_t tx_dma_buf[MAX_MESSAGE_SIZE]; // Buffer for Tx DMA
 } uart_rx_all_port_t;
 
 void UARTInit(void);

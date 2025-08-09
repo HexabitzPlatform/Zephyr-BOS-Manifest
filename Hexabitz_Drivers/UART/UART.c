@@ -12,6 +12,7 @@ const struct uart_config uart_cfg = {.baudrate = 921600,
 
 void uart_callback(const struct device *dev, struct uart_event *evt, void *user_data);
 
+BOS_Status UART_Tx(uint8_t port_index, const uint8_t *data, size_t length);
 /***************************************************************************/
 /* Configure UARTs *********************************************************/
 /***************************************************************************/
@@ -72,6 +73,25 @@ void UARTInit(void)
     uart_ring_buffer[UART_6].port = uart_devs[UART_6];
 #endif
 }
+
+/***************************************************************************/
+BOS_Status UART_Tx(uint8_t port_index, const uint8_t *data, size_t length)
+{
+    // if (port_index >= NUM_OF_PORTS)
+    //     return BOS_ERR;
+
+    const struct device *uart_dev = uart_devs[port_index];
+
+    if (!device_is_ready(uart_dev))
+        return 0;
+
+    int ret = uart_tx(uart_dev, data, length, SYS_FOREVER_MS);
+    if (ret != 0)
+        return 0;
+
+    return BOS_OK;
+}
+
 /***************************************************************************/
 void uart_callback(const struct device *dev, struct uart_event *evt, void *user_data)
 {
@@ -96,6 +116,16 @@ void uart_callback(const struct device *dev, struct uart_event *evt, void *user_
         uart_rx_enable(uart_rx_procces->port,
                        uart_rx_procces->rx_dma_buf,
                        sizeof(uart_rx_procces->rx_dma_buf), 0);
+        break;
+
+    case UART_TX_DONE:
+        // TX completed successfully
+        // evt->data.tx.len is how many bytes were sent
+        // evt->data.tx.buf is the buffer pointer
+        break;
+
+    case UART_TX_ABORTED:
+        // TX was aborted before completion
         break;
 
     default:

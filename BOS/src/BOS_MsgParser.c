@@ -75,6 +75,7 @@ void BackEndTask(void)
             while (bytes_to_read > 0)
             {
                 bytes_read = ring_buf_get(&uart_rx->rb, &byte, 1);
+
                 if (bytes_read == 0)
                 {
                     printk("Warning: No data in ring buffer for UART %d\n", uart_handler);
@@ -159,8 +160,9 @@ void BackEndTask(void)
                                     }
                                     else
                                     {
-                                        for (uint32_t i = 0; i < length; i++)
-                                            uart_poll_out(uart_rx->port, msg_ptr->data[i]);
+                                        // for (uint32_t i = 0; i < length; i++)
+                                        //     uart_poll_out(uart_rx->port, msg_ptr->data[i]);
+                                        UART_Tx(uart_handler, msg_ptr->data, length);
                                     }
                                 }
                                 else
