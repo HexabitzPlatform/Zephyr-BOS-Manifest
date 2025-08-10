@@ -578,6 +578,18 @@ extern uart_event_port_len_t uart_data_info;
 
 #define GLOBAL_MSG_COUNT 10
 
+// Declare the LED structure
+// extern const struct gpio_dt_spec indicator_led;
+
+// Initialize the LED
+int led_init(void);
+
+// Control functions
+int led_on(void);
+int led_off(void);
+int led_toggle(void);
+int led_ping(uint32_t delay);
+
 uint8_t calculate_crc8(const uint8_t *data, size_t length);
 
 #endif

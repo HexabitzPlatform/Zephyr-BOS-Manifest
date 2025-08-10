@@ -15,6 +15,50 @@ uint8_t myID = 1;
 uint8_t QisEmpty(uint8_t *Q);
 uint8_t minArr(uint8_t *arr, uint8_t *Q);
 
+// Define the LED using device tree node
+const struct gpio_dt_spec indicator_led = GPIO_DT_SPEC_GET(DT_ALIAS(module_led), gpios);
+// const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(DT_ALIAS(module_led), gpios);
+/***************************************************************************/
+int led_init(void)
+{
+    if (!gpio_is_ready_dt(&indicator_led))
+    {
+        printk("Error: LED GPIO device %s not ready\n", indicator_led.port->name);
+        return -ENODEV;
+    }
+
+    int ret = gpio_pin_configure_dt(&indicator_led, GPIO_OUTPUT_ACTIVE);
+    if (ret < 0)
+    {
+        printk("Error: Failed to configure LED GPIO (err %d)\n", ret);
+        return ret;
+    }
+
+    return 0;
+}
+/***************************************************************************/
+int led_on(void)
+{
+    return gpio_pin_set_dt(&indicator_led, 1);
+}
+/***************************************************************************/
+int led_off(void)
+{
+    return gpio_pin_set_dt(&indicator_led, 0);
+}
+/***************************************************************************/
+int led_toggle(void)
+{
+    return gpio_pin_toggle_dt(&indicator_led);
+}
+/***************************************************************************/
+int led_ping(uint32_t delay)
+{
+    led_toggle();
+    k_msleep(delay);
+
+    return 0;
+}
 /***************************************************************************/
 /**
  * @brief Calculates an 8-bit CRC using polynomial 0x4C11DB7 over 4-byte reversed data chunks.

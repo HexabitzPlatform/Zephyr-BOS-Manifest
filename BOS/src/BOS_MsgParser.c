@@ -9,8 +9,6 @@ uint8_t PortStatus[NUM_OF_PORTS + 1] = {FREE}; // Initialize all ports to FREE
 /* Private function prototypes *********************************************/
 /***************************************************************************/
 BOS_Status User_MessagingParser(uint16_t code, uint8_t port, uint8_t src, uint8_t dst, uint8_t *data, uint8_t shift);
-static BOS_Status HandlePingCode(uint8_t src, uint8_t port, uint8_t *data, uint8_t shift);
-static BOS_Status HandlePingResponseCode(uint8_t src, uint8_t port, uint8_t *data, uint8_t shift);
 static BOS_Status HandleHiCode(uint8_t src, uint8_t port, uint8_t *data, uint8_t shift);
 static BOS_Status HandleHiResponseCode(uint8_t src, uint8_t port, uint8_t *data, uint8_t shift);
 static BOS_Status HandleEthernetDefaultValuesCode(uint8_t src, uint8_t port, uint8_t *data, uint8_t shift);
@@ -206,7 +204,6 @@ void PxMessagingTask(void)
             port = msg_ptr->port;
             dst = msg_ptr->data[0];
             src = msg_ptr->data[1];
-            messageParames = msg_ptr->data;
 
             shift = 0;
 
@@ -237,13 +234,15 @@ void PxMessagingTask(void)
             /* Set shift index to the start of message payload (parameters) */
             shift += 4;
 
+            messageParames = msg_ptr->data;
+
             switch (code)
             {
             case CODE_UNKNOWN_MESSAGE:
                 break;
 
             case CODE_PING:
-                result = HandlePingCode(src, port, messageParames, shift);
+                led_ping(60);
                 break;
 
             case CODE_PING_RESPONSE:
@@ -251,15 +250,15 @@ void PxMessagingTask(void)
                 break;
 
             case CODE_IND_ON:
-                // IND_ON();
+                led_on();
                 break;
 
             case CODE_IND_OFF:
-                // IND_OFF();
+                led_off();
                 break;
 
             case CODE_IND_TOGGLE:
-                // IND_toggle();
+                led_toggle();
                 break;
 
             case CODE_HI:
@@ -434,20 +433,7 @@ __weak BOS_Status User_MessagingParser(uint16_t code, uint8_t port, uint8_t src,
 
 //     return Status;
 // }
-/***************************************************************************/
-static BOS_Status HandlePingCode(uint8_t src, uint8_t port, uint8_t *data, uint8_t shift)
-{
-    BOS_Status Status = BOS_OK;
 
-    return Status;
-}
-/***************************************************************************/
-static BOS_Status HandlePingResponseCode(uint8_t src, uint8_t port, uint8_t *data, uint8_t shift)
-{
-    BOS_Status Status = BOS_OK;
-
-    return Status;
-}
 /***************************************************************************/
 static BOS_Status HandleHiCode(uint8_t src, uint8_t port, uint8_t *data, uint8_t shift)
 {

@@ -9,43 +9,27 @@
 
 #if DT_NODE_EXISTS(DT_NODELABEL(usart1))
 #define UART_1_DEVICE_NODE DT_NODELABEL(usart1)
-// static const struct device *const uart1_dev = DEVICE_DT_GET(UART_1_DEVICE_NODE);
 #endif
 
 #if DT_NODE_EXISTS(DT_NODELABEL(usart2))
 #define UART_2_DEVICE_NODE DT_NODELABEL(usart2)
-// static const struct device *const uart2_dev = DEVICE_DT_GET(UART_2_DEVICE_NODE);
 #endif
 
 #if DT_NODE_EXISTS(DT_NODELABEL(usart3))
 #define UART_3_DEVICE_NODE DT_NODELABEL(usart3)
-// static const struct device *const uart3_dev = DEVICE_DT_GET(UART_3_DEVICE_NODE);
 #endif
 
 #if DT_NODE_EXISTS(DT_NODELABEL(usart4))
 #define UART_4_DEVICE_NODE DT_NODELABEL(usart4)
-// static const struct device *const uart4_dev = DEVICE_DT_GET(UART_4_DEVICE_NODE);
 #endif
 
 #if DT_NODE_EXISTS(DT_NODELABEL(usart5))
 #define UART_5_DEVICE_NODE DT_NODELABEL(usart5)
-// static const struct device *const uart5_dev = DEVICE_DT_GET(UART_5_DEVICE_NODE);
 #endif
 
 #if DT_NODE_EXISTS(DT_NODELABEL(usart6))
 #define UART_6_DEVICE_NODE DT_NODELABEL(usart6)
-// static const struct device *const uart6_dev = DEVICE_DT_GET(UART_6_DEVICE_NODE);
 #endif
-
-/*
-#define NUM_OF_PORTS                        \
-    (DT_NODE_EXISTS(DT_NODELABEL(usart1)) + \
-     DT_NODE_EXISTS(DT_NODELABEL(usart2)) + \
-     DT_NODE_EXISTS(DT_NODELABEL(usart3)) + \
-     DT_NODE_EXISTS(DT_NODELABEL(usart4)) + \
-     DT_NODE_EXISTS(DT_NODELABEL(usart5)) + \
-     DT_NODE_EXISTS(DT_NODELABEL(usart6)))
-*/
 
 static const struct device *const uart_devs[NUM_OF_PORTS] = {
 #if DT_NODE_EXISTS(DT_NODELABEL(usart1))
@@ -88,7 +72,6 @@ typedef struct
     uint8_t port_index;
     uint8_t rb_buffer[MSG_RX_BUF_SIZE];   // buffer used by ring_buf
     uint8_t rx_dma_buf[MAX_MESSAGE_SIZE]; // buffer passed to uart_rx_enable
-    uint8_t tx_dma_buf[MAX_MESSAGE_SIZE]; // Buffer for Tx DMA
 } uart_rx_all_port_t;
 
 void UARTInit(void);
@@ -99,5 +82,6 @@ int GetPort(const struct device *uart_dev);
 
 BOS_Status ReadPortsDir(void);
 BOS_Status UpdateBaudrate(uint8_t port, uint32_t baudrate);
+BOS_Status UART_Tx(uint8_t port_index, const uint8_t *data, size_t length);
 
 #endif

@@ -12,7 +12,6 @@ const struct uart_config uart_cfg = {.baudrate = 921600,
 
 void uart_callback(const struct device *dev, struct uart_event *evt, void *user_data);
 
-BOS_Status UART_Tx(uint8_t port_index, const uint8_t *data, size_t length);
 /***************************************************************************/
 /* Configure UARTs *********************************************************/
 /***************************************************************************/
