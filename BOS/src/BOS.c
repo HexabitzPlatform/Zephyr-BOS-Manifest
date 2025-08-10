@@ -10,7 +10,7 @@ BOSOptionByte_t OptionByte = {0};
 uint16_t Array[MAX_NUM_OF_MODULES][MAX_NUM_OF_PORTS + 1] = {{0}}; /* Array topology */
 uint8_t NumberofModulesinArray = 1;
 uint16_t ArrayPortsDir[MAX_NUM_OF_MODULES];
-uint8_t myID = 1;
+uint8_t myID = 2;
 
 uint8_t QisEmpty(uint8_t *Q);
 uint8_t minArr(uint8_t *arr, uint8_t *Q);

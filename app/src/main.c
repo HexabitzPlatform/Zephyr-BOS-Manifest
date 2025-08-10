@@ -10,6 +10,9 @@ void UserTask(void)
 
     while (1)
     {
-        led_blink(60);
+        // led_blink(60);
+
+        led_toggle();
+        k_msleep(500);
     }
 }

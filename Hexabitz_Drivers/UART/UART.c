@@ -103,8 +103,14 @@ void uart_callback(const struct device *dev, struct uart_event *evt, void *user_
                      evt->data.rx.buf + evt->data.rx.offset,
                      evt->data.rx.len);
 
+        // uart_data_info.port_index = GetPort(uart_rx_procces->port);
         uart_data_info.port_index = uart_rx_procces->port_index;
         uart_data_info.packet_lenght = evt->data.rx.len;
+
+        // for (uint32_t i = 0; i < uart_data_info.packet_lenght; i++)
+        //     uart_poll_out(GetUart(P2), evt->data.rx.buf[i]);
+
+        // UART_Tx(1, evt->data.rx.buf, uart_data_info.packet_lenght);
 
         // Send the message to the backend task
         k_msgq_put(&uart_event_msgq, &uart_data_info, K_NO_WAIT);
