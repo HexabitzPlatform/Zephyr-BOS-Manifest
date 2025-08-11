@@ -552,13 +552,13 @@ extern uint8_t myID;
 // struct uart_event_port_len
 // {
 //     uint8_t port_index;     // UART port index
-//     uint32_t packet_lenght; // Length of received data
+//     uint32_t packet_length; // Length of received data
 // };
 
 typedef struct
 {
     uint8_t port_index;     // UART port index
-    uint32_t packet_lenght; // Length of received data
+    uint32_t packet_length; // Length of received data
 } uart_event_port_len_t;
 
 typedef struct

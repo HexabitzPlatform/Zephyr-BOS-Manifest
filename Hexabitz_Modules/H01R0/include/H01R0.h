@@ -4,6 +4,8 @@
 /* Includes ****************************************************************/
 #include <BOS.h>
 
+#define MODULE_PN _H01R0
+
 /* Define Available ports */
 // #define _P1
 // #define _P2
